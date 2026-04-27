@@ -50,7 +50,7 @@ extensions:
     architectures:
       - x86_64
     repos:
-      - cs10-nv
+      - voyager
     packages:
       - kernel
       - kernel-core
@@ -74,7 +74,7 @@ extensions:
     architectures:
       - aarch64
     repos:
-      - cs10-nv
+      - voyager
     packages:
       - kernel-64k
       - kernel-64k-core
