@@ -83,7 +83,7 @@ extensions:
       - kernel-64k-modules-extra
       - kernel-64k-devel
       - kernel-headers
-    match-base-evr: kernel
+    match-base-evr: kernel-64k
   # https://issues.redhat.com/browse/COS-2940
   sysstat:
     packages:
