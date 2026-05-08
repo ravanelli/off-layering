@@ -58,7 +58,7 @@ extensions:
       - kernel-modules-extra
       - kernel-devel
       - kernel-headers
-    match-base-evr: kernel
+    match-base-evr: kernel-core
   # https://github.com/openshift/machine-config-operator/pull/2456
   # https://github.com/openshift/enhancements/blob/master/enhancements/sandboxed-containers/sandboxed-containers-tech-preview.md
   # GRPA-3123
@@ -83,7 +83,7 @@ extensions:
       - kernel-64k-modules-extra
       - kernel-64k-devel
       - kernel-headers
-    match-base-evr: kernel-64k
+    match-base-evr: kernel-64k-core
   # https://issues.redhat.com/browse/COS-2940
   sysstat:
     packages:
