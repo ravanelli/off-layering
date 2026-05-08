@@ -8,9 +8,6 @@ ARG VERSION
 ARG TYPE
 COPY voyager.repo  /etc/yum.repos.d/
 
-ARG KERNEL_URL="https://kojihub.stream.centos.org/kojifiles/vol/koji02/packages/kernel/6.12.0"
-ARG KERNEL_VERSION="218.1.el10nv"
-
 RUN <<EOF
 
 if [ "$TYPE" = "baseimage" ]; then
@@ -22,16 +19,10 @@ fi
 arch="$(uname -m)"
 dnf remove kernel-core --assumeyes
 
-kernel_name='kernel'
-[ "$arch" = 'aarch64' ] && kernel_name='kernel-64k'
+kernel_name='kernel-core'
+[ "$arch" = 'aarch64' ] && kernel_name='kernel-64k-core'
 
-baseurl="${KERNEL_URL}/${KERNEL_VERSION}/${arch}"; \
-mkdir -p /tmp/new-kernel && cd /tmp/new-kernel; \
-curl -s "${baseurl}/" \
-  | grep -oE "${kernel_name}-((core|modules|modules-core|modules-extra))-[0-9][^\"]+\.rpm" \
-  | xargs -r -I{} curl -s -O "${baseurl}/{}"; \
-dnf install --assumeyes --disablerepo=* /tmp/new-kernel/*.rpm; \
-rm -rf /tmp/new-kernel
+dnf install --assumeyes --disablerepo=* --enablerepo=voyager "$kernel_name"
 
 kver=$(ls /usr/lib/modules)
 env DRACUT_NO_XATTR=1 dracut -vf /usr/lib/modules/$kver/initramfs.img "$kver"
