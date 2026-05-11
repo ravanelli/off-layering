@@ -3,6 +3,6 @@
 # see: https://github.com/coreos/coreos-assembler/pull/866.
 
 # We're using a CentOS built kernel for now and secureboot tests are failing
-- pattern: basic.uefi-secure
+- pattern: '*uefi-secure'
   snooze: 2026-05-31
   tracker: https://github.com/ravanelli/off-layering/pull/3
