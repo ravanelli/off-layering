@@ -81,7 +81,7 @@ extensions:
       - kernel-64k-modules
       - kernel-64k-modules-core
       - kernel-64k-modules-extra
-      - kernel-64k-devel
+      - kernel-devel
       - kernel-headers
     match-base-evr: kernel-64k-core
   # https://issues.redhat.com/browse/COS-2940
