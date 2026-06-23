@@ -11,5 +11,10 @@ fi
 jq 'del(.["check-passwd","check-groups"])' /usr/share/rpm-ostree/treefile.json > filtered.json
 
 . /etc/os-release
-rpm-ostree compose extensions filtered.json "extensions/${ID}-${VERSION_ID}.yaml" \
+extensions_yaml="extensions/${ID}-${VERSION_ID}.yaml"
+# Replace the __OCP_VERSION__ placeholder with the actual OpenShift version.
+# This allows the same YAML file to be used across different OCP versions
+# (e.g. 4.23 and 5.0) without duplication.
+sed -i "s/__OCP_VERSION__/${OPENSHIFT_VERSION}/g" "$extensions_yaml"
+rpm-ostree compose extensions filtered.json "$extensions_yaml" \
     --rootfs=/ --output-dir=/usr/share/rpm-ostree/extensions/
