@@ -1,31 +1,49 @@
 # This builds the OCP4NV nodeimage/baseimage on top of the nodeimage/baseimage itself.
 ARG FROM
-ARG VERSION
-ARG TYPE
 FROM ${FROM}
 
-ARG VERSION
-ARG TYPE
 COPY voyager.repo  /etc/yum.repos.d/
+COPY doca.repo    /etc/yum.repos.d/
 
 RUN <<EOF
+set -euxo pipefail
 
-if [ "$TYPE" = "baseimage" ]; then
     OLD_VERSION=$(grep "^OSTREE_VERSION=" /usr/lib/os-release | cut -d"'" -f2)
     [ -n "$OLD_VERSION" ] || { echo "Error: Could not extract version from os-release"; exit 1; }
-    sed -i "s|$OLD_VERSION|$VERSION|g" /usr/lib/os-release
-fi
+#    sed -i "s|$OLD_VERSION|$VERSION|g" /usr/lib/os-release
 
 arch="$(uname -m)"
 dnf remove kernel-core --assumeyes
 
-kernel_name='kernel-core kernel-modules-extra'
-[ "$arch" = 'aarch64' ] && kernel_name='kernel-64k-core kernel-64k-modules-extra'
+if [ "$arch" = 'aarch64' ]; then
+    kernel_name='kernel-64k-core kernel-64k-modules-extra'
+    mlnx_name='mlnx-ofa_kernel-64k-26.07-OFED.26.07.0.7.7.0.kver.6.12.0_259.26.el10nv.2.aarch64 mlnx-ofa_kernel-modules-64k'
+    disable='doca-x86_64'
+else
+    kernel_name='kernel-core kernel-modules-extra'
+    mlnx_name='mlnx-ofa_kernel-26.07-OFED.26.07.0.7.7.0.kver.6.12.0_259.26.el10nv.2.x86_64 mlnx-ofa_kernel-modules'
+    disable='doca-aarch64'
+fi
 
-dnf install --assumeyes --disablerepo=* --enablerepo=voyager $kernel_name
+dnf install --assumeyes --disablerepo='*' --enablerepo=voyager $kernel_name
+dnf remove --assumeyes openvswitch3.5
+
+
+# See https://developers.redhat.com/articles/2025/09/23/customize-rhel-coreos-on-cluster-image-mode
+# Mellanox packages are installed in /opt we need the workaround below
+mkdir /var/opt /var/usrlocal
+
+dnf install --assumeyes \
+  --disablerepo=$disable \
+  doca-networking-runtime \
+  openvswitch-selinux-extra-policy \
+  mft \
+  libunwind \
+  $mlnx_name
+
+dnf clean all
 
 kver=$(ls /usr/lib/modules)
 env DRACUT_NO_XATTR=1 dracut -vf /usr/lib/modules/$kver/initramfs.img "$kver"
-EOF
 
-LABEL org.opencontainers.image.version=$VERSION
+EOF

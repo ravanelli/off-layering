@@ -29,7 +29,7 @@ extensions:
     packages:
       - libreswan
       - NetworkManager-libreswan
-      - openvswitch3.5-ipsec
+      - doca-openvswitch-ipsec
   # https://github.com/coreos/fedora-coreos-tracker/issues/326
   usbguard:
     packages:
@@ -51,6 +51,7 @@ extensions:
       - x86_64
     repos:
       - voyager
+      - doca-x86_64
     packages:
       - kernel
       - kernel-core
@@ -75,6 +76,7 @@ extensions:
       - aarch64
     repos:
       - voyager
+      - doca-aarch64
     packages:
       - kernel-64k
       - kernel-64k-core
